@@ -11,15 +11,15 @@
 
         <StackPanel VerticalAlignment="Center">
 
-            <TextBox x:Name="OriginalTextTextBlock" Text="HEllo"></TextBox>
+            <TextBox x:Name="OriginalTextTextBox" Text="kelp"></TextBox>
 
             <Button x:Name="EncryptButton" Click="Encrypt_Click">Enrypt</Button>
 
-            <TextBox x:Name="EncryptedTextTextBlock"></TextBox>
+            <TextBox x:Name="EncryptedTextTextBox"></TextBox>
 
             <Button x:Name="DecryptButton" Click="Decrypt_Click">Decrypt</Button>
 
-            <TextBox x:Name="DecryptedTextTextBlock"></TextBox>
+            <TextBox x:Name="DecryptedTextTextBox"></TextBox>
 
         </StackPanel>
 

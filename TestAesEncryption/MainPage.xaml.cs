@@ -23,30 +23,41 @@ namespace TestAesEncryption
 {    
     public class AesEnDecryption
     {
-        // Key with 256 and IV with 16 length
-        private string AES_Key = "280f8bb8c43d532f389ef0e2a5321220b0782b065205dcdfcb8d8f02ed5115b9";
-        private string AES_IV = "CC0A69779E15780ADAE46C45EB451A23";
-        private string convertedKey = "KA+LuMQ9Uy84nvDipTISILB4KwZSBdzfy42PAu1RFbk=";
-        private string convertedIV = "zAppd54VeAra5GxF60UaIw==";
         private IBuffer m_iv = null;
         private CryptographicKey m_key;
+        private string base64Key;
+        private string base64IV;
 
-        public static string AesEncrypt(string data, string hexKey, string hexIv)
+        public AesEnDecryption(string hexKey, string hexIV)
         {
-            byte[] input = Encoding.ASCII.GetBytes(data);
-            string base64Key = Convert.ToBase64String(ConvertFromStringToHex(hexKey)); // "KA+LuMQ9Uy84nvDipTISILB4KwZSBdzfy42PAu1RFbk="
-            string base64IV = Convert.ToBase64String(ConvertFromStringToHex(hexIv));   // "zAppd54VeAra5GxF60UaIw==";
+            // Key with 256 and IV with 16 length
+            base64Key = Convert.ToBase64String(ConvertFromStringToHex(hexKey)); // "KA+LuMQ9Uy84nvDipTISILB4KwZSBdzfy42PAu1RFbk="
+            base64IV = Convert.ToBase64String(ConvertFromStringToHex(hexIV));   // "zAppd54VeAra5GxF60UaIw==";
 
             IBuffer key = Convert.FromBase64String(base64Key).AsBuffer();
-            IBuffer m_iv = Convert.FromBase64String(base64IV).AsBuffer();
+            m_iv = Convert.FromBase64String(base64IV).AsBuffer();
             SymmetricKeyAlgorithmProvider provider = SymmetricKeyAlgorithmProvider.OpenAlgorithm(SymmetricAlgorithmNames.AesCbcPkcs7);
-            CryptographicKey m_key = provider.CreateSymmetricKey(key);
+            m_key = provider.CreateSymmetricKey(key);
+        }
 
-            IBuffer bufferMsg = CryptographicBuffer.ConvertStringToBinary(Encoding.ASCII.GetString(input), BinaryStringEncoding.Utf8);
+        public string Encrypt(string data)
+        {
+            byte[] dataBytes = Encoding.ASCII.GetBytes(data);
+
+            IBuffer bufferMsg = CryptographicBuffer.ConvertStringToBinary(Encoding.ASCII.GetString(dataBytes), BinaryStringEncoding.Utf8);
             IBuffer bufferEncrypt = CryptographicEngine.Encrypt(m_key, bufferMsg, m_iv);
             byte[] encryptedBytes = bufferEncrypt.ToArray();
-
             string result = Convert.ToBase64String(encryptedBytes);
+            return result;
+        }
+
+        public string Decrypt(string cipherText)
+        {
+            byte[] dataBytes = Convert.FromBase64String(cipherText);
+
+            IBuffer bufferDecrypt = CryptographicEngine.Decrypt(m_key, dataBytes.AsBuffer(), m_iv);
+            byte[] decryptedBytes = bufferDecrypt.ToArray();
+            string result = Encoding.UTF8.GetString(decryptedBytes);
             return result;
         }
 
@@ -60,27 +71,6 @@ namespace TestAesEncryption
                 resultantArray[i] = Convert.ToByte(inputHex.Substring(i * 2, 2), 16);
             }
             return resultantArray;
-        }
-
-        public AesEnDecryption()
-        {
-            IBuffer key = Convert.FromBase64String(convertedKey).AsBuffer();
-            m_iv = Convert.FromBase64String(convertedIV).AsBuffer();
-            SymmetricKeyAlgorithmProvider provider = SymmetricKeyAlgorithmProvider.OpenAlgorithm(SymmetricAlgorithmNames.AesCbcPkcs7);
-            m_key = provider.CreateSymmetricKey(key);
-        }
-
-        public byte[] Encrypt(byte[] input)
-        {
-            IBuffer bufferMsg = CryptographicBuffer.ConvertStringToBinary(Encoding.ASCII.GetString(input), BinaryStringEncoding.Utf8);
-            IBuffer bufferEncrypt = CryptographicEngine.Encrypt(m_key, bufferMsg, m_iv);
-            return bufferEncrypt.ToArray();
-        }
-
-        public byte[] Decrypt(byte[] input)
-        {
-            IBuffer bufferDecrypt = CryptographicEngine.Decrypt(m_key, input.AsBuffer(), m_iv);
-            return bufferDecrypt.ToArray();
         }
     }
 
@@ -96,16 +86,14 @@ namespace TestAesEncryption
 
         private void Encrypt_Click(object sender, RoutedEventArgs e)
         {
-            string originalText = OriginalTextTextBlock.Text;
-            AesEnDecryption en = new AesEnDecryption();
-            byte[] encryptedBytes = en.Encrypt(Encoding.ASCII.GetBytes(originalText));
-            string uni = Convert.ToBase64String(encryptedBytes);
-            EncryptedTextTextBlock.Text = AesEnDecryption.AesEncrypt(originalText, "280f8bb8c43d532f389ef0e2a5321220b0782b065205dcdfcb8d8f02ed5115b9", "CC0A69779E15780ADAE46C45EB451A23");
+            AesEnDecryption en = new AesEnDecryption("280f8bb8c43d532f389ef0e2a5321220b0782b065205dcdfcb8d8f02ed5115b9", "CC0A69779E15780ADAE46C45EB451A23");
+            EncryptedTextTextBox.Text = en.Encrypt(OriginalTextTextBox.Text);
         }
 
         private void Decrypt_Click(object sender, RoutedEventArgs e)
         {
-
+            AesEnDecryption en = new AesEnDecryption("280f8bb8c43d532f389ef0e2a5321220b0782b065205dcdfcb8d8f02ed5115b9", "CC0A69779E15780ADAE46C45EB451A23");
+            DecryptedTextTextBox.Text = en.Decrypt(EncryptedTextTextBox.Text);
         }
     }
 }

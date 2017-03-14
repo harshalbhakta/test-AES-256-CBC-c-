@@ -1,0 +1,29 @@
+﻿<Page
+    x:Class="TestAesEncryption.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:TestAesEncryption"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="White">
+
+        <StackPanel VerticalAlignment="Center">
+
+            <TextBox x:Name="OriginalTextTextBlock" Text="HEllo"></TextBox>
+
+            <Button x:Name="EncryptButton" Click="Encrypt_Click">Enrypt</Button>
+
+            <TextBox x:Name="EncryptedTextTextBlock"></TextBox>
+
+            <Button x:Name="DecryptButton" Click="Decrypt_Click">Decrypt</Button>
+
+            <TextBox x:Name="DecryptedTextTextBlock"></TextBox>
+
+        </StackPanel>
+
+        
+
+    </Grid>
+</Page>
